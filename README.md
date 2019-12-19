@@ -8,8 +8,8 @@
 - [Functional components](#functional-components)
 - [Class components](#class-components)
 - [PropType (property validation)](#proptype-property-validation)
-- [Composing components](#composing-components)
 - [Managing state](#managing-state)
+- [Composing components](#composing-components)
 - ["Lifting state"](#lifting-state)
 - [Component lifecycle](#component-lifecycle)
 - [Improve performance](#improving-performance)
@@ -185,12 +185,46 @@ class MyComponent extends React.Component {
 export default MyComponent;
 ```
 
+## Managing state
+
+- Your state is encapsulated: It is only accessible _to the component that owns and sets it_.
+- However, a component can pass its state down as props to its child components
+- Components re-render each time receives new props
+
+Let's add a `ResultPanel` component to some other one:
+
+```javascript
+render(){
+  return !!this.state.gssid
+    ? <ResultPanel gssid={this.state.gssid} />
+    : '<p>Choose a place</p>';
+}
+```
+
+The `ResultPanel` component would receive the gssid in its `props`:
+
+```javascript
+function ResultPanel(props) {
+  return (
+    <div>
+      <h2>Location:</h2>
+      <p>{props.gssid}</p>
+    </div>
+  );
+}
+```
+
+Never modify `this.state` directly, instead use:
+
+- `this.setState({ foo: 'bar' });`, or
+- `this.setState({ this.state..., foo: 'bar' });`
+
 ## Composing components
 
 ..how to add components together, to make a larger complex component:
 
 ```javascript
-// deinfe a re-usable component (re-usable by passing in 'props')
+// define a re-usable component (re-usable by passing in 'props')
 function Welcome(props) {
   return <h1>Hello, {props.name}</h1>;
 }
@@ -208,49 +242,15 @@ function App() {
 ReactDOM.render(<App />, document.getElementById("root"));
 ```
 
-## Managing state
-
-> - Your `state` is encapsulated: It is **only** accessible to the component that owns and sets it.
-> - However, a component can pass its state down as `props` to its child components
-> - A components `render()` will run each time receives new `props`
-
-Let's add a `ResultPanel` component to some other one:
-
-```
-render(){
-  return !!this.state.gssid
-    ? <ResultPanel gssid={this.state.gssid} />
-    : '<p>Choose a place</p>';
-}
-```
-
-The `ResultPanel` component would receive the gssid in its `props`:
-
-```
-function ResultPanel(props) {
-  return (
-    <div>
-      <h2>Location:</h2>
-      <p>{props.gssid}</p>
-    </div>
-  );
-}
-```
-
-Never modify `this.state` directly, instead use:
-
-- `this.setState({ foo: 'bar' });`, or
-- `this.setState({ this.state..., foo: 'bar' });`
-
 ## "Lifting state"
 
-For when you two components to be in sync with each other..
+For when you need two components to be in sync with each other..
 
 > In React, sharing state is accomplished by moving it up to the closest common ancestor of the components that need it.
 
 Update the parent component:
 
-```
+```diff
 class MainComponent extends React.Component {
 
   constructor(props) {
@@ -316,9 +316,9 @@ class ChildTwo extends React.Component {
 
 ## Component Lifecycle
 
-> In applications with many components, it’s very important to free up resources taken by the components when they are destroyed.
->
-> Example: unsetting event handlers, killing timers, etc.
+In applications with many components, it’s very important to free up resources taken by the components when they are destroyed.
+
+Example: unsetting event handlers, killing timers, etc.
 
 ```javascript
 class myComponent extends React.Component {
@@ -438,7 +438,7 @@ class myInput extends React.Component {
 
 Accessing the `ref`:
 
-```
+```javascript
   focusInput() {
     // You must access "current" to get the DOM node using the **raw DOM API**
     this.inputElemRef.current.focus();
