@@ -14,7 +14,6 @@
 - [Component lifecycle](#component-lifecycle)
 - [Improve performance](#improving-performance)
 - [Accessing the regular DOM, using `refs`](#accessing-the-regular-dom-using-refs)
-- [Common problems](#common-problems)
 - [Further reading](#further-reading)
 
 ---
@@ -342,6 +341,10 @@ In applications with many components, it’s very important to free up resources
 
 Example: unsetting event handlers, killing timers, etc.
 
+You should do these things in the right part of the component "lifecycle".
+
+Here are the lifecycle methods of a React component:
+
 ```javascript
 class myComponent extends React.Component {
   constructor() {
@@ -394,7 +397,7 @@ class myComponent extends React.Component {
 
 ## Improve performance
 
-By default React will, re-render the component each time its `props` change.
+By default React will re-render the component each time its `props` change.
 
 Here's the default behavior of a component, deciding when to update (re-render):
 
