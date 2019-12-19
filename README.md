@@ -22,6 +22,8 @@
 
 > In the typical React dataflow, props are the only way that parent components interact with their children.
 >
+> Components should be "pure" - they should not modify their inputs.
+>
 > A component must never modify its own props.
 >
 > To modify a child, you re-render it with new props.
@@ -137,6 +139,7 @@ class MyComponent extends React.Component {
     // 2. Encase multiple lines in parentheses
     // 3. Embed JS in the JSX using `foo={some js}`
     // 4. In JSX, HTML attributes are in camelCase
+    // 5. You can not use `setState()` within a render function!
     return (
       <div>
         <h1>Hello {this.state.foo}</h1>
@@ -214,10 +217,10 @@ function ResultPanel(props) {
 }
 ```
 
-Remember: `setState()` is async!
+### Remember: setState() is asyncronous!
 
-To ensure state was updated, and that do do stuff only _after_ it was updated,
-use an anonymous callback, and do stuff in there.
+To ensure that you do stuff only _after_ it `setState()` has finished updating
+the component state, use an anonymous callback, and do stuff in there:
 
 ```javascript
 someFunc = () => {
@@ -265,11 +268,60 @@ ReactDOM.render(<App />, document.getElementById("root"));
 
 ## "Lifting state"
 
-For when you need two components to be in sync with each other..
+For when you need two components to be in sync with each other (share the same data)..
 
 > In React, sharing state is accomplished by moving it up to the closest common ancestor of the components that need it.
 
-Update the parent component:
+First, update the children components:
+
+- remove setting of state values
+- add passing in of state as `props` to the render methods
+
+```diff
+class ChildOne extends React.Component {
+  contructor(props) {
+    super(props);
+-    this.state.foo = 'ONE';
+  }
+
+-  updateFoo() {
+-    this.setState({this.state..., foo});
+-  }
+
+  // ...
+
+-  render() {
++  render(props) {
+-    return <p>{this.state.foo}</p>
++    return <p>{this.props.foo}</p>
+  }
+}
+
+
+class ChildTwo extends React.Component {
+  contructor(props) {
+    super(props);
+-    this.state.foo = 'TWO';
+  }
+
+-  updateFoo(foo) {
+-    this.setState({this.state..., foo});
+-  }
+
+  // ...
+
+-  render() {
++  render(props) {
+-    return <p>{this.state.foo}</p>
++    return <p>{this.props.foo}</p>
+  }
+}
+```
+
+Then update the parent component:
+
+- move state handling methods to this component
+- pass the state into the children components as `props`
 
 ```diff
 class MainComponent extends React.Component {
@@ -282,55 +334,19 @@ class MainComponent extends React.Component {
     this.updateFoo = this.updateFoo.bind(this);
   }
 
-  updateFoo() {
-    this.setState({this.state..., foo});
-  }
++  updateFoo(foo) {
++    this.setState({this.state..., foo});
++  }
+
+  // ...
 
   render() {
     return (
 -      <ChildOne />
 -      <ChildTwo />
 +      <ChildOne foo={this.state.foo} />
-+      <ChildTwo foo={this.state.foo}/>
++      <ChildTwo foo={this.state.foo} />
     )
-  }
-}
-```
-
-...and then update the children components:
-
-```diff
-class ChildOne extends React.Component {
-  contructor(props) {
-    super(props);
--    this.state.foo 'AAA';
-  }
-
--  updateFoo() {
--    this.setState({this.state..., foo});
--  }
-
--  render() {
-+  render(props) {
--    return <p>{this.state.foo}</p>
-+    return <p>{this.props.foo}</p>
-  }
-}
-
-class ChildTwo extends React.Component {
-  contructor(props) {
-    super(props);
--    this.state.foo 'BBB';
-  }
-
--  updateFoo() {
--    this.setState({this.state..., foo});
--  }
-
--  render() {
-+  render(props) {
--    return <p>{this.state.foo}</p>
-+    return <p>{this.props.foo}</p>
   }
 }
 ```
@@ -362,6 +378,10 @@ class myComponent extends React.Component {
     // start AJAX calls to load in data
     //
     // You can also setup up event handlers, timers, etc here
+    //
+    // You *could* modify or set the state here, but
+    // it's not recommended - the initial render will the
+    // update, so set it in the constructor instead.
   }
 
   componentWillReceiveProps() {
@@ -472,7 +492,7 @@ Accessing the `ref`:
 
 ## Further reading:
 
-- [Comonents and Props](https://reactjs.org/docs/components-and-props.html#props-are-read-only)
+- [Components and Props](https://reactjs.org/docs/components-and-props.html#props-are-read-only)
 - [State and Lifecycle](https://reactjs.org/docs/state-and-lifecycle.html)
 - [Lifting State up](https://reactjs.org/docs/lifting-state-up.html)
 - [Refs and the DOM](https://reactjs.org/docs/refs-and-the-dom.html)
