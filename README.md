@@ -14,6 +14,7 @@
 - [Component lifecycle](#component-lifecycle)
 - [Improve performance](#improving-performance)
 - [Accessing the regular DOM, using `refs`](#accessing-the-regular-dom-using-refs)
+- [Common problems](#common-problems)
 - [Further reading](#further-reading)
 
 ---
@@ -212,6 +213,27 @@ function ResultPanel(props) {
     </div>
   );
 }
+```
+
+Remember: `setState()` is async!
+
+To ensure state was updated, and that do do stuff only _after_ it was updated,
+use an anonymous callback, and do stuff in there.
+
+```javascript
+someFunc = () => {
+  // pass an anonymous functions as a 2nd param to `setState`
+  // and do stuff in the anonymous func, to ensure
+  // you do stuff only _after_ state was updated
+
+  this.setState({ foo: this.state.foo + 1 }, () => {
+    // check this.state.foo here,
+    // as we know it was updated
+    if (this.state.foo > 7) {
+      this.setState({ bar: 20 });
+    }
+  });
+};
 ```
 
 Never modify `this.state` directly, instead use:
@@ -454,3 +476,5 @@ Accessing the `ref`:
 - [react-16-lifecycle-methods-how-and-when-to-use-them](https://blog.bitsrc.io/react-16-lifecycle-methods-how-and-when-to-use-them-f4ad31fb2282)
 - [React lifecycle-simulators](https://reactarmory.com/guides/lifecycle-simulators)
 - [PropTypes](https://reactjs.org/docs/typechecking-with-proptypes.html)
+- [Common React problems](https://jscomplete.com/learn/react-beyond-basics/react-cfp)
+- [The 7 most common mistakes that react developers make](https://codeburst.io/the-7-most-common-mistakes-that-react-developers-make-8ff64fc8c61)
