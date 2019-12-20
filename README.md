@@ -8,6 +8,7 @@
 - [Functional components](#functional-components)
 - [Class components](#class-components)
 - [PropType (property validation)](#proptype-property-validation)
+- [Styling your components](#styling-your-components)
 - [Managing state](#managing-state)
 - [Composing components](#composing-components)
 - ["Lifting state"](#lifting-state)
@@ -135,11 +136,15 @@ class MyComponent extends React.Component {
   }
 
   render() {
-    // 1. Components must return 1 element only
-    // 2. Encase multiple lines in parentheses
-    // 3. Embed JS in the JSX using `foo={some js}`
-    // 4. In JSX, HTML attributes are in camelCase
-    // 5. You can not use `setState()` within a render function!
+    /*
+    * 1. Components must return 1 (container) element only
+    * 2. Encase multiple return lines in parentheses
+    * 3. In JSX, HTML attributes are in camelCase
+    * 4. You can not use `setState()` within a render function!
+    * 5. Use quotes when your props are strings: `foo="someString"`
+    * 6. Use braces when your props are JavaScript: `foo={someJS}`
+    *
+    */
     return (
       <div>
         <h1>Hello {this.state.foo}</h1>
@@ -186,6 +191,78 @@ class MyComponent extends React.Component {
 +
 
 export default MyComponent;
+```
+
+## Styling your components
+
+### Importing CSS
+
+Simply import a css file. You should have a separate css file for each component:
+
+Files:
+
+```
+./MyComponent/
+./MyComponent/MyComponent.css
+./MyComponent/MyComponent.jsx
+```
+
+In `MyComponent.css`:
+
+```css
+.msc-container {
+  ...;
+}
+.msc-para {
+  ...;
+}
+```
+
+In `MyComponent.jsx`
+
+```javascript
+import React from "react";
+import "./MyComponent.css";
+
+const MyComponent = () => (
+  <div className="msc-container">
+    <p className="msc-para">Get started with CSS styling</p>
+  </div>
+);
+
+export default MyComponent;
+```
+
+### Using inline CSS
+
+Create a style object, then add a style property:
+
+```js
+const divStyle = {
+  color: 'blue',
+  backgroundImage: 'url(' + imgUrl + ')',
+};
+
+class MyComponent extends React.Component {
+
+  ...
+
+render() {
+  return (
+    <div style={divStyle}>
+      <p>Hello</p>
+    </div>
+  );
+}
+```
+
+Or add the style object inline (without defining it earlier):
+
+```diff
+    <div style={divStyle}>
+-      <p>Hello</p>
++      <p style={{ fontSize: '12px' }}>Hello</p>
+    </div>
 ```
 
 ## Managing state
@@ -493,6 +570,8 @@ Accessing the `ref`:
 ## Further reading:
 
 - [Components and Props](https://reactjs.org/docs/components-and-props.html#props-are-read-only)
+- [5 ways to style react components in 2019](https://blog.bitsrc.io/5-ways-to-style-react-components-in-2019-30f1ccc2b5b)
+- [React CSS-in-JS comparison](https://github.com/MicheleBertoli/css-in-js)
 - [State and Lifecycle](https://reactjs.org/docs/state-and-lifecycle.html)
 - [Lifting State up](https://reactjs.org/docs/lifting-state-up.html)
 - [Refs and the DOM](https://reactjs.org/docs/refs-and-the-dom.html)
